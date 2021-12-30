@@ -1,10 +1,11 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import ColorButton, { Color } from '../components/ColorButton'
 import styles from '../styles/Home.module.css'
 
-function HSVtoRGB(h: number, s: number, v: number) {
+function HSVtoRGB(h: number, s: number, v: number): Color {
   var r: number = 0, g: number = 0, b: number = 0, i: number, f: number, p: number, q: number, t: number;
 
   i = Math.floor(h * 6);
@@ -31,7 +32,26 @@ function ChangeColor(h: number, s: number, v: number) {
 
   const rgb = HSVtoRGB(h / 100, s / 100, v / 100);
 
-  fetch(`http://192.168.2.114/?r=${rgb.r}&g=${rgb.g}&b=${rgb.b}`, { method: "POST" });
+  ChangeColorRaw(rgb);
+}
+
+function ChangeColorRaw(color: Color)
+{
+  fetch(`http://192.168.2.114/?r=${color.r}&g=${color.g}&b=${color.b}`, { method: "POST" });
+}
+
+function PersistFavoriteColorList(colors: Color[]) {
+  window.localStorage.setItem("favoriteColors", JSON.stringify(colors));
+}
+
+function LoadFavoriteColorList(): Color[] {
+  var item = window.localStorage.getItem("favoriteColors")
+  if(item == null)
+  {
+    return [ { r: 0, g: 0, b: 0}];
+  }
+
+  return JSON.parse(item)
 }
 
 const Home: NextPage = () => {
@@ -39,6 +59,35 @@ const Home: NextPage = () => {
   const [saturation, setSaturationRaw] = useState(100);
   const [value, setValueRaw] = useState(100);
   const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined);
+
+  const [favoriteColorList, setFavoriteColorList] = useState<Color[]>([])
+
+  useEffect(() => {
+     setFavoriteColorList(LoadFavoriteColorList())
+  }, [])
+
+  function addFavoriteColor(color: Color){
+    if(favoriteColorList.some(c => c.r === color.r && c.g === color.g && c.b === color.b))
+    {
+      return;
+    }
+
+    const newList = [...favoriteColorList, color];
+
+    setFavoriteColorList(newList);
+    PersistFavoriteColorList(newList);
+  }
+
+  function removeFavoriteColor(color: Color){
+    if(color.r === 0 && color.g === 0 && color.b === 0) {
+      return;
+    }
+
+    const newList = favoriteColorList.filter(c => (c.r === color.r && c.g === color.g && c.b === color.b) === false);
+
+    setFavoriteColorList(newList);
+    PersistFavoriteColorList(newList);
+  }
 
   function debounceChangeColor(h: number, s: number, v: number) {
     if(timeoutId) {
@@ -91,12 +140,24 @@ const Home: NextPage = () => {
           <div className={styles.text}>Helligkeit</div>
           <input className={styles.slider} value={value} style={{ background: `linear-gradient(to right, rgb(${rgbValueMin.r}, ${rgbValueMin.g}, ${rgbValueMin.b}), rgb(${rgbValueMax.r}, ${rgbValueMax.g}, ${rgbValueMax.b}))` }} type="range" min="0" max="100" onChange={e => setValue(parseInt(e.target.value))} />
         </div>
-        <button className={styles.button} style={{gridRow: 5, gridColumn: 2, backgroundColor: 'black'}} >AUS</button>
-        <button className={styles.button} style={{gridRow: 5, gridColumn: 3, backgroundColor: 'green'}} ></button>
-        <button className={styles.button} style={{gridRow: 5, gridColumn: 4, backgroundColor: 'red'}} ></button>
-        <button className={styles.button} style={{gridRow: 6, gridColumn: 2, backgroundColor: 'black'}} >Aus</button>
-        <button className={styles.button} style={{gridRow: 6, gridColumn: 3, backgroundColor: 'green'}} ></button>
-        <button className={styles.button} style={{gridRow: 6, gridColumn: 4, backgroundColor: 'red'}} ></button>
+        <button 
+          className={styles.button + ' ' + styles.favorit}
+          style={{gridRow: 5, gridColumnStart: 2, gridColumnEnd: 5}}
+          onClick={() => addFavoriteColor(rgb)}>Als Favorit hinzufügen</button>
+        {
+          favoriteColorList.map((color, i) => {
+            const t = (color.r === 0 && color.g === 0 && color.b === 0) ? "Aus" : ""
+            const row = 6 + Math.floor(i / 3)
+            const column = 2 + Math.floor(i % 3)
+            return <ColorButton 
+              key={`${color.r}-${color.g}-${color.b}`}
+              className={styles.button} 
+              style={{gridRow: row, gridColumn: column}} 
+              buttonColor={color}
+              onColorSelect={color => ChangeColorRaw(color)}
+              onRemove={color => removeFavoriteColor(color)}>{t}</ColorButton>
+          })
+        }
       </main>
     </div>
   )

@@ -1,7 +1,7 @@
 .main {
   height: 100vh;
   display: grid;
-  grid-template-rows: 10vw 1fr 1fr 1fr 1fr 1fr 1fr 10vw;
+  grid-template-rows: 10vw 1fr 1fr 1fr 0.5fr 1fr 1fr 1fr 10vw;
   grid-template-columns: 10vw 1fr 1fr 1fr 10vw;
   place-items: stretch;
 }
@@ -53,5 +53,11 @@ border-style: solid;
   border-color: white;
   border-width: 3px;
   border-style: solid;
-  color: white
+  color: #ffffff;
+  box-shadow: 1px 1px 10px 1px black;
+}
+
+.favorit {
+  background: white;
+  color: black;
 }
