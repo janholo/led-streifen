@@ -1,12 +1,9 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import ColorButton, { Color } from '../components/ColorButton'
-import styles from '../styles/Home.module.css'
+import './App.css';
+import React, { useEffect, useState } from 'react'
+import ColorButton, { Color } from './components/ColorButton'
 
 function HSVtoRGB(h: number, s: number, v: number): Color {
-  var r: number = 0, g: number = 0, b: number = 0, i: number, f: number, p: number, q: number, t: number;
+  let r: number = 0, g: number = 0, b: number = 0, i: number, f: number, p: number, q: number, t: number;
 
   i = Math.floor(h * 6);
   f = h * 6 - i;
@@ -14,12 +11,36 @@ function HSVtoRGB(h: number, s: number, v: number): Color {
   q = v * (1 - f * s);
   t = v * (1 - (1 - f) * s);
   switch (i % 6) {
-      case 0: r = v, g = t, b = p; break;
-      case 1: r = q, g = v, b = p; break;
-      case 2: r = p, g = v, b = t; break;
-      case 3: r = p, g = q, b = v; break;
-      case 4: r = t, g = p, b = v; break;
-      case 5: r = v, g = p, b = q; break;
+      case 0: 
+        r = v
+        g = t
+        b = p;
+        break;
+      case 1: 
+        r = q
+        g = v
+        b = p
+        break;
+      case 2:
+        r = p
+        g = v
+        b = t
+        break;
+      case 3:
+        r = p
+        g = q
+        b = v
+        break;
+      case 4:
+        r = t
+        g = p
+        b = v
+        break;
+      case 5:
+        r = v
+        g = p
+        b = q
+        break;
   }
   return {
       r: Math.round(r * 255),
@@ -54,7 +75,7 @@ function LoadFavoriteColorList(): Color[] {
   return JSON.parse(item)
 }
 
-const Home: NextPage = () => {
+const App = () => {
   const [hue, setHueRaw] = useState(0);
   const [saturation, setSaturationRaw] = useState(100);
   const [value, setValueRaw] = useState(100);
@@ -121,27 +142,22 @@ const Home: NextPage = () => {
   const rgbValueMax = HSVtoRGB(hue / 100, saturation / 100, 1);
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>LED Streifen</title>
-        <link rel="icon" href="/favicon.png" />
-      </Head>
-
-      <main className={styles.main} style={{ backgroundColor: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` }}>
-        <div className={styles.farbe + ' ' + styles.farbeH}>
-          <div className={styles.text}>Farbe</div>
-          <input className={styles.slider} value={hue} style={{ background: 'linear-gradient(to right, hsl(0, 100%, 50%), hsl(120, 100%, 50%), hsl(240, 100%, 50%), hsl(360, 100%, 50%))' }} type="range" min="0" max="100" onChange={e => setHue(parseInt(e.target.value))} />
+    <div className="container">
+      <main className="main" style={{ backgroundColor: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` }}>
+        <div className="farbe farbeH">
+          <div className="text">Farbe</div>
+          <input className="slider" value={hue} style={{ background: 'linear-gradient(to right, hsl(0, 100%, 50%), hsl(120, 100%, 50%), hsl(240, 100%, 50%), hsl(360, 100%, 50%))' }} type="range" min="0" max="100" onChange={e => setHue(parseInt(e.target.value))} />
         </div>
-        <div className={styles.farbe + ' ' + styles.farbeS}>
-          <div className={styles.text}>Sättigung</div>
-          <input className={styles.slider} value={saturation} style={{ background: `linear-gradient(to right, rgb(${rgbSaturationMin.r}, ${rgbSaturationMin.g}, ${rgbSaturationMin.b}), rgb(${rgbSaturationMax.r}, ${rgbSaturationMax.g}, ${rgbSaturationMax.b}))` }} type="range" min="0" max="100" onChange={e => setSaturation(parseInt(e.target.value))} />
+        <div className="farbe farbeS">
+          <div className="text">Sättigung</div>
+          <input className="slider" value={saturation} style={{ background: `linear-gradient(to right, rgb(${rgbSaturationMin.r}, ${rgbSaturationMin.g}, ${rgbSaturationMin.b}), rgb(${rgbSaturationMax.r}, ${rgbSaturationMax.g}, ${rgbSaturationMax.b}))` }} type="range" min="0" max="100" onChange={e => setSaturation(parseInt(e.target.value))} />
         </div>
-        <div className={styles.farbe + ' ' + styles.farbeL}>
-          <div className={styles.text}>Helligkeit</div>
-          <input className={styles.slider} value={value} style={{ background: `linear-gradient(to right, rgb(${rgbValueMin.r}, ${rgbValueMin.g}, ${rgbValueMin.b}), rgb(${rgbValueMax.r}, ${rgbValueMax.g}, ${rgbValueMax.b}))` }} type="range" min="0" max="100" onChange={e => setValue(parseInt(e.target.value))} />
+        <div className="farbe farbeL">
+          <div className="text">Helligkeit</div>
+          <input className="slider" value={value} style={{ background: `linear-gradient(to right, rgb(${rgbValueMin.r}, ${rgbValueMin.g}, ${rgbValueMin.b}), rgb(${rgbValueMax.r}, ${rgbValueMax.g}, ${rgbValueMax.b}))` }} type="range" min="0" max="100" onChange={e => setValue(parseInt(e.target.value))} />
         </div>
         <button 
-          className={styles.button + ' ' + styles.favorit}
+          className="button favorit"
           style={{gridRow: 5, gridColumnStart: 2, gridColumnEnd: 5}}
           onClick={() => addFavoriteColor(rgb)}>Als Favorit hinzufügen</button>
         {
@@ -151,7 +167,7 @@ const Home: NextPage = () => {
             const column = 2 + Math.floor(i % 3)
             return <ColorButton 
               key={`${color.r}-${color.g}-${color.b}`}
-              className={styles.button} 
+              className="button" 
               style={{gridRow: row, gridColumn: column}} 
               buttonColor={color}
               onColorSelect={color => ChangeColorRaw(color)}
@@ -163,4 +179,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default App;
