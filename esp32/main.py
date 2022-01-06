@@ -28,73 +28,25 @@ def init():
     bluePin.freq(1000)
     bluePin.duty(0)
 
-html = """<!DOCTYPE html>
+html = """<!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
-    <title>Lichtband</title>
-    <style>
-        button {
-            width: 60vw;
-            height: 15vh;
-            color: white;
-            font-size: 4vh;
-            border-radius: 3vh;
-            border-style: none;
-        }
-        .main-grid {
-            height: 100vh;
-            display: grid;
-            grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
-            place-items: center;
-        }
-    </style>
+    <link rel="icon" href="https://janholo.github.io/led-streifen/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="apple-touch-icon" href="https://janholo.github.io/led-streifen/logo192.png" />
+    <link rel="manifest" href="https://janholo.github.io/led-streifen/manifest.json" />
+    <title>LED Streifen</title>
+    <script defer="defer" src="https://janholo.github.io/led-streifen/static/js/main.465363fe.js"></script>
+    <link href="https://janholo.github.io/led-streifen/static/css/main.6a189911.css" rel="stylesheet">
 </head>
 
-<body>
-    <div class="main-grid">
-        <button id="redButton" style="background-color: red; grid-row: 1;">
-            Rot
-        </button>
-
-        <button id="greenButton" style="background-color: green; grid-row: 2;">
-            Grün
-        </button>
-
-        <button id="blueButton" style="background-color: blue; grid-row: 3;">
-            Blau
-        </button>
-
-        <button id="whiteButton" style="background-color: rgb(253, 237, 218); color: black; grid-row: 4;">
-            Weiß
-        </button>
-
-        <button id="offButton" style="background-color: black; grid-row: 5;">
-            Aus
-        </button>
-    </div>
-
-    <script>
-        function postColor(red, green, blue) {
-            fetch(`/?r=${red}&g=${green}&b=${blue}`, { method: "POST" });
-        }
-        document.getElementById("redButton").addEventListener("click", function (e) {
-            postColor(255, 0, 0)
-        }, false);
-        document.getElementById("greenButton").addEventListener("click", function (e) {
-            postColor(0, 255, 0)
-        }, false);
-        document.getElementById("blueButton").addEventListener("click", function (e) {
-            postColor(0, 0, 255)
-        }, false);
-        document.getElementById("whiteButton").addEventListener("click", function (e) {
-            postColor(255, 230, 180)
-        }, false);
-        document.getElementById("offButton").addEventListener("click", function (e) {
-            postColor(0, 0, 0)
-        }, false);
-    </script>
+<body><noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
 </body>
+
 </html>
 """
 

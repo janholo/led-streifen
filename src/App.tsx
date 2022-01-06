@@ -2,6 +2,12 @@ import './App.css';
 import React, { useEffect, useState } from 'react'
 import ColorButton, { Color } from './components/ColorButton'
 
+enum State {
+  Idle = "Idle",
+  Loading = "Loading",
+  Error = "Error"
+}
+
 function HSVtoRGB(h: number, s: number, v: number): Color {
   let r: number = 0, g: number = 0, b: number = 0, i: number, f: number, p: number, q: number, t: number;
 
@@ -49,18 +55,6 @@ function HSVtoRGB(h: number, s: number, v: number): Color {
   };
 }
 
-function ChangeColor(h: number, s: number, v: number) {
-
-  const rgb = HSVtoRGB(h / 100, s / 100, v / 100);
-
-  ChangeColorRaw(rgb);
-}
-
-function ChangeColorRaw(color: Color)
-{
-  fetch(`http://192.168.2.114/?r=${color.r}&g=${color.g}&b=${color.b}`, { method: "POST" });
-}
-
 function PersistFavoriteColorList(colors: Color[]) {
   window.localStorage.setItem("favoriteColors", JSON.stringify(colors));
 }
@@ -80,8 +74,24 @@ const App = () => {
   const [saturation, setSaturationRaw] = useState(100);
   const [value, setValueRaw] = useState(100);
   const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined);
+  const [state, setState] = useState<State>(State.Idle);
 
   const [favoriteColorList, setFavoriteColorList] = useState<Color[]>([])
+
+  function changeColor(h: number, s: number, v: number) {
+
+    const rgb = HSVtoRGB(h / 100, s / 100, v / 100);
+  
+    changeColorRaw(rgb);
+  }
+  
+  function changeColorRaw(color: Color)
+  {
+    setState(State.Loading)
+    fetch(`http://192.168.2.114/?r=${color.r}&g=${color.g}&b=${color.b}`, { method: "POST" }).then(
+      () => setState(State.Idle),
+      () => setState(State.Error));
+  }
 
   useEffect(() => {
      setFavoriteColorList(LoadFavoriteColorList())
@@ -114,7 +124,7 @@ const App = () => {
     if(timeoutId) {
       window.clearTimeout(timeoutId)
     }
-    var id = window.setTimeout(() => ChangeColor(h, s, v), 500)
+    var id = window.setTimeout(() => changeColor(h, s, v), 500)
     setTimeoutId(id)
   }
 
@@ -144,6 +154,10 @@ const App = () => {
   return (
     <div className="container">
       <main className="main" style={{ backgroundColor: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` }}>
+        <div className="info">
+          { state === State.Error && <p>Error</p> }
+          { state === State.Loading && <div className='spinner'></div> }
+        </div>
         <div className="farbe farbeH">
           <div className="text">Farbe</div>
           <input className="slider" value={hue} style={{ background: 'linear-gradient(to right, hsl(0, 100%, 50%), hsl(120, 100%, 50%), hsl(240, 100%, 50%), hsl(360, 100%, 50%))' }} type="range" min="0" max="100" onChange={e => setHue(parseInt(e.target.value))} />
@@ -156,10 +170,13 @@ const App = () => {
           <div className="text">Helligkeit</div>
           <input className="slider" value={value} style={{ background: `linear-gradient(to right, rgb(${rgbValueMin.r}, ${rgbValueMin.g}, ${rgbValueMin.b}), rgb(${rgbValueMax.r}, ${rgbValueMax.g}, ${rgbValueMax.b}))` }} type="range" min="0" max="100" onChange={e => setValue(parseInt(e.target.value))} />
         </div>
+        {
+          favoriteColorList.length < 9 &&
         <button 
           className="button favorit"
           style={{gridRow: 5, gridColumnStart: 2, gridColumnEnd: 5}}
           onClick={() => addFavoriteColor(rgb)}>Als Favorit hinzufügen</button>
+        }
         {
           favoriteColorList.map((color, i) => {
             const t = (color.r === 0 && color.g === 0 && color.b === 0) ? "Aus" : ""
@@ -170,7 +187,7 @@ const App = () => {
               className="button" 
               style={{gridRow: row, gridColumn: column}} 
               buttonColor={color}
-              onColorSelect={color => ChangeColorRaw(color)}
+              onColorSelect={color => changeColorRaw(color)}
               onRemove={color => removeFavoriteColor(color)}>{t}</ColorButton>
           })
         }

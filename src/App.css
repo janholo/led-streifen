@@ -24,6 +24,15 @@
   grid-column-end: 5;
 }
 
+.info {
+  grid-row: 1;
+  grid-column: 5;
+  place-self: center;
+  color: red;
+  font-weight: bold;
+  font-size: 3vw;
+}
+
 .slider {
 width: 100%;
 height: 60px;
@@ -60,4 +69,21 @@ border-style: solid;
 .favorit {
   background: white;
   color: black;
+}
+
+.spinner {
+  height:7vw;
+  width:7vw;
+  margin:0px auto;
+  animation: rotation .6s infinite linear;
+  border-left:1vw solid rgba(0,174,239,.15);
+  border-right:1vw solid rgba(0,174,239,.15);
+  border-bottom:1vw solid rgba(0,174,239,.15);
+  border-top:1vw solid rgba(0,174,239,.8);
+  border-radius:100%;
+}
+
+@keyframes rotation {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(359deg);}
 }

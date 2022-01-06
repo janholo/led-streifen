@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/led-streifen/static/css/main.6e7daf77.css",
+    "main.js": "/led-streifen/static/js/main.6c2c7177.js",
+    "index.html": "/led-streifen/index.html",
+    "main.6e7daf77.css.map": "/led-streifen/static/css/main.6e7daf77.css.map",
+    "main.6c2c7177.js.map": "/led-streifen/static/js/main.6c2c7177.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6e7daf77.css",
+    "static/js/main.6c2c7177.js"
+  ]
+}
