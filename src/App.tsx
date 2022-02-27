@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useEffect, useState } from 'react'
-import ColorButton, { Color } from './components/ColorButton'
+import ColorButton, { Color, ColorHsv, HSVtoRGB } from './components/ColorButton'
 
 enum State {
   Idle = "Idle",
@@ -8,62 +8,15 @@ enum State {
   Error = "Error"
 }
 
-function HSVtoRGB(h: number, s: number, v: number): Color {
-  let r: number = 0, g: number = 0, b: number = 0, i: number, f: number, p: number, q: number, t: number;
 
-  i = Math.floor(h * 6);
-  f = h * 6 - i;
-  p = v * (1 - s);
-  q = v * (1 - f * s);
-  t = v * (1 - (1 - f) * s);
-  switch (i % 6) {
-      case 0: 
-        r = v
-        g = t
-        b = p;
-        break;
-      case 1: 
-        r = q
-        g = v
-        b = p
-        break;
-      case 2:
-        r = p
-        g = v
-        b = t
-        break;
-      case 3:
-        r = p
-        g = q
-        b = v
-        break;
-      case 4:
-        r = t
-        g = p
-        b = v
-        break;
-      case 5:
-        r = v
-        g = p
-        b = q
-        break;
-  }
-  return {
-      r: Math.round(r * 255),
-      g: Math.round(g * 255),
-      b: Math.round(b * 255)
-  };
-}
-
-function PersistFavoriteColorList(colors: Color[]) {
+function PersistFavoriteColorList(colors: ColorHsv[]) {
   window.localStorage.setItem("favoriteColors", JSON.stringify(colors));
 }
 
-function LoadFavoriteColorList(): Color[] {
+function LoadFavoriteColorList(): ColorHsv[] {
   var item = window.localStorage.getItem("favoriteColors")
-  if(item == null)
-  {
-    return [ { r: 0, g: 0, b: 0}];
+  if (item == null) {
+    return [{ hue: 0, saturation: 0, value: 0 }];
   }
 
   return JSON.parse(item)
@@ -76,17 +29,16 @@ const App = () => {
   const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined);
   const [state, setState] = useState<State>(State.Idle);
 
-  const [favoriteColorList, setFavoriteColorList] = useState<Color[]>([])
+  const [favoriteColorList, setFavoriteColorList] = useState<ColorHsv[]>([])
 
-  function changeColor(h: number, s: number, v: number) {
+  function changeColor(color: ColorHsv) {
 
-    const rgb = HSVtoRGB(h / 100, s / 100, v / 100);
-  
+    const rgb = HSVtoRGB(color);
+
     changeColorRaw(rgb);
   }
-  
-  function changeColorRaw(color: Color)
-  {
+
+  function changeColorRaw(color: Color) {
     setState(State.Loading)
     fetch(`http://192.168.2.114/?r=${color.r}&g=${color.g}&b=${color.b}`, { method: "POST" }).then(
       () => setState(State.Idle),
@@ -94,12 +46,11 @@ const App = () => {
   }
 
   useEffect(() => {
-     setFavoriteColorList(LoadFavoriteColorList())
+    setFavoriteColorList(LoadFavoriteColorList())
   }, [])
 
-  function addFavoriteColor(color: Color){
-    if(favoriteColorList.some(c => c.r === color.r && c.g === color.g && c.b === color.b))
-    {
+  function addFavoriteColor(color: ColorHsv) {
+    if (favoriteColorList.some(c => c.hue === color.hue && c.saturation === color.saturation && c.value === color.value)) {
       return;
     }
 
@@ -109,54 +60,59 @@ const App = () => {
     PersistFavoriteColorList(newList);
   }
 
-  function removeFavoriteColor(color: Color){
-    if(color.r === 0 && color.g === 0 && color.b === 0) {
+  function removeFavoriteColor(color: ColorHsv) {
+    if (color.hue === 0 && color.saturation === 0 && color.value === 0) {
       return;
     }
 
-    const newList = favoriteColorList.filter(c => (c.r === color.r && c.g === color.g && c.b === color.b) === false);
+    const newList = favoriteColorList.filter(c => (c.hue === color.hue && c.saturation === color.saturation && c.value === color.value) === false);
 
     setFavoriteColorList(newList);
     PersistFavoriteColorList(newList);
   }
 
-  function debounceChangeColor(h: number, s: number, v: number) {
-    if(timeoutId) {
+  function debounceChangeColor(color: ColorHsv) {
+    if (timeoutId) {
       window.clearTimeout(timeoutId)
     }
-    var id = window.setTimeout(() => changeColor(h, s, v), 500)
+    var id = window.setTimeout(() => changeColor(color), 500)
     setTimeoutId(id)
   }
 
+  const hsv: ColorHsv = {
+    hue: hue,
+    saturation: saturation,
+    value: value
+  }
+  const rgb = HSVtoRGB(hsv);
+
   const setHue = (h: number) => {
     setHueRaw(h)
-    debounceChangeColor(h, saturation, value)
+    debounceChangeColor({ ...hsv, hue: h })
   }
 
   const setSaturation = (s: number) => {
     setSaturationRaw(s)
-    debounceChangeColor(hue, s, value)
+    debounceChangeColor({ ...hsv, saturation: s })
   }
 
   const setValue = (v: number) => {
     setValueRaw(v)
-    debounceChangeColor(hue, saturation, v)
+    debounceChangeColor({ ...hsv, value: v })
   }
 
-  const rgb = HSVtoRGB(hue / 100, saturation / 100, value / 100);
+  const rgbSaturationMin = HSVtoRGB({ ...hsv, saturation: 0 });
+  const rgbSaturationMax = HSVtoRGB({ ...hsv, saturation: 100 });
 
-  const rgbSaturationMin = HSVtoRGB(hue / 100, 0, value / 100);
-  const rgbSaturationMax = HSVtoRGB(hue / 100, 1, value / 100);
-
-  const rgbValueMin = HSVtoRGB(hue / 100, saturation / 100, 0);
-  const rgbValueMax = HSVtoRGB(hue / 100, saturation / 100, 1);
+  const rgbValueMin = HSVtoRGB({ ...hsv, value: 0 });
+  const rgbValueMax = HSVtoRGB({ ...hsv, value: 100 });
 
   return (
     <div className="container">
       <main className="main" style={{ backgroundColor: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` }}>
         <div className="info">
-          { state === State.Error && <p>Error</p> }
-          { state === State.Loading && <div className='spinner'></div> }
+          {state === State.Error && <p>Error</p>}
+          {state === State.Loading && <div className='spinner'></div>}
         </div>
         <div className="farbe farbeH">
           <div className="text">Farbe</div>
@@ -172,22 +128,27 @@ const App = () => {
         </div>
         {
           favoriteColorList.length < 9 &&
-        <button 
-          className="button favorit"
-          style={{gridRow: 5, gridColumnStart: 2, gridColumnEnd: 5}}
-          onClick={() => addFavoriteColor(rgb)}>Als Favorit hinzufügen</button>
+          <button
+            className="button favorit"
+            style={{ gridRow: 5, gridColumnStart: 2, gridColumnEnd: 5 }}
+            onClick={() => addFavoriteColor(hsv)}>Als Favorit hinzufügen</button>
         }
         {
           favoriteColorList.map((color, i) => {
-            const t = (color.r === 0 && color.g === 0 && color.b === 0) ? "Aus" : ""
+            const t = (color.hue === 0 && color.saturation === 0 && color.value === 0) ? "Aus" : ""
             const row = 6 + Math.floor(i / 3)
             const column = 2 + Math.floor(i % 3)
-            return <ColorButton 
-              key={`${color.r}-${color.g}-${color.b}`}
-              className="button" 
-              style={{gridRow: row, gridColumn: column}} 
+            return <ColorButton
+              key={`${color.hue}-${color.saturation}-${color.value}`}
+              className="button"
+              style={{ gridRow: row, gridColumn: column }}
               buttonColor={color}
-              onColorSelect={color => changeColorRaw(color)}
+              onColorSelect={color => {
+                setHueRaw(color.hue)
+                setValueRaw(color.value)
+                setSaturationRaw(color.saturation)
+                changeColor(color)
+              }}
               onRemove={color => removeFavoriteColor(color)}>{t}</ColorButton>
           })
         }
@@ -197,3 +158,4 @@ const App = () => {
 }
 
 export default App;
+
