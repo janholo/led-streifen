@@ -8,18 +8,23 @@ enum State {
   Error = "Error"
 }
 
+const url = "https://api.jsonbin.io/v3/b/621db0337caf5d67835c3d34";
 
-function PersistFavoriteColorList(colors: ColorHsv[]) {
-  window.localStorage.setItem("favoriteColors", JSON.stringify(colors));
+async function PersistFavoriteColorList(colors: ColorHsv[]) {
+  await fetch(url, {
+    method: "PUT",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({favoriteColors: colors}),
+  })
 }
 
-function LoadFavoriteColorList(): ColorHsv[] {
-  var item = window.localStorage.getItem("favoriteColors")
-  if (item == null) {
-    return [{ hue: 0, saturation: 0, value: 0 }];
-  }
+async function LoadFavoriteColorList(): Promise<ColorHsv[]> {
+  var response = await fetch(url + "/latest")
+  var body = await response.json();
 
-  return JSON.parse(item)
+  return body.record.favoriteColors;
 }
 
 const App = () => {
@@ -46,26 +51,30 @@ const App = () => {
   }
 
   useEffect(() => {
-    setFavoriteColorList(LoadFavoriteColorList())
+    LoadFavoriteColorList().then(l => setFavoriteColorList(l));
   }, [])
 
-  function addFavoriteColor(color: ColorHsv) {
-    if (favoriteColorList.some(c => c.hue === color.hue && c.saturation === color.saturation && c.value === color.value)) {
+  async function addFavoriteColor(color: ColorHsv) {
+    let tempFavoriteColorList = await LoadFavoriteColorList()
+    
+    if (tempFavoriteColorList.some(c => c.hue === color.hue && c.saturation === color.saturation && c.value === color.value)) {
       return;
     }
 
-    const newList = [...favoriteColorList, color];
+    const newList = [...tempFavoriteColorList, color];
 
     setFavoriteColorList(newList);
     PersistFavoriteColorList(newList);
   }
 
-  function removeFavoriteColor(color: ColorHsv) {
+  async function removeFavoriteColor(color: ColorHsv) {
+    let tempFavoriteColorList = await LoadFavoriteColorList()
+        
     if (color.hue === 0 && color.saturation === 0 && color.value === 0) {
       return;
     }
 
-    const newList = favoriteColorList.filter(c => (c.hue === color.hue && c.saturation === color.saturation && c.value === color.value) === false);
+    const newList = tempFavoriteColorList.filter(c => (c.hue === color.hue && c.saturation === color.saturation && c.value === color.value) === false);
 
     setFavoriteColorList(newList);
     PersistFavoriteColorList(newList);
