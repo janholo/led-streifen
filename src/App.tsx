@@ -45,7 +45,7 @@ const App = () => {
 
   function changeColorRaw(color: Color) {
     setState(State.Loading)
-    fetch(`http://192.168.2.114/?r=${color.r}&g=${color.g}&b=${color.b}`, { method: "POST" }).then(
+    fetch(`http://192.168.2.105/?r=${color.r}&g=${color.g}&b=${color.b}`, { method: "POST" }).then(
       () => setState(State.Idle),
       () => setState(State.Error));
   }
