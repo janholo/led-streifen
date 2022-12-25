@@ -1,2 +1,143 @@
-body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;margin:0;padding:0}*{box-sizing:border-box}.main{display:grid;grid-template-columns:10vw 1fr 1fr 1fr 10vw;grid-template-rows:10vw 1fr 1fr 1fr .5fr 1fr 1fr 1fr 10vw;height:100vh;place-items:stretch}.farbeH{grid-column-end:5;grid-column-start:2;grid-row:2}.farbeS{grid-column-end:5;grid-column-start:2;grid-row:3}.farbeL{grid-column-end:5;grid-column-start:2;grid-row:4}.info{color:red;font-size:3vw;font-weight:700;grid-column:5;grid-row:1;place-self:center}.slider{-webkit-appearance:none;border:3px solid #fff;border-radius:5px;height:60px;width:100%}.slider::-webkit-slider-runnable-track{background:transparent;height:50px}.slider::-moz-range-track{background:transparent;height:50px}.slider::-webkit-slider-thumb{-webkit-appearance:none;background-color:#fff;border:1px solid gray;border-radius:7px;height:50px;width:16px}.slider::-moz-range-thumb{height:60px}.text{font-weight:700;margin-left:5px}.button{border:3px solid #fff;border-radius:5px;box-shadow:1px 1px 10px 1px #000;color:#fff;margin:1.5vh}.favorit{background:#fff;color:#000}.spinner{-webkit-animation:rotation .6s linear infinite;animation:rotation .6s linear infinite;border:1vw solid rgba(0,174,239,.15);border-radius:100%;border-top-color:rgba(0,174,239,.8);height:7vw;margin:0 auto;width:7vw}@-webkit-keyframes rotation{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}@keyframes rotation{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    margin: 0;
+    padding: 0
+}
+
+* {
+    box-sizing: border-box
+}
+
+.main {
+    display: grid;
+    grid-template-columns: min(10vw, 10vh) 1fr 1fr 1fr min(10vw, 10vh);
+    grid-template-rows: min(10vw, 10vh) 1fr 1fr 1fr .5fr 1fr 1fr 1fr .5fr 1fr min(10vw, 10vh);
+    height: 100vh;
+    place-items: stretch
+}
+
+.farbeH {
+    grid-column-end: 5;
+    grid-column-start: 2;
+    grid-row: 2
+}
+
+.farbeS {
+    grid-column-end: 5;
+    grid-column-start: 2;
+    grid-row: 3
+}
+
+.farbeL {
+    grid-column-end: 5;
+    grid-column-start: 2;
+    grid-row: 4
+}
+
+.info {
+    color: red;
+    font-size: 3vw;
+    font-weight: 700;
+    grid-column: 5;
+    grid-row: 1;
+    place-self: center
+}
+
+.slider {
+    -webkit-appearance: none;
+    border: 3px solid #fff;
+    border-radius: 5px;
+    height: 60px;
+    width: 100%
+}
+
+.slider::-webkit-slider-runnable-track {
+    background: transparent;
+    height: 50px
+}
+
+.slider::-moz-range-track {
+    background: transparent;
+    height: 50px
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background-color: #fff;
+    border: 1px solid gray;
+    border-radius: 7px;
+    height: 50px;
+    width: 16px
+}
+
+.slider::-moz-range-thumb {
+    height: 60px
+}
+
+.text {
+    font-weight: 700;
+    margin-left: 5px
+}
+
+.button {
+    border: 3px solid #fff;
+    border-radius: 5px;
+    box-shadow: 1px 1px 10px 1px #000;
+    color: #fff;
+    margin: 1.5vh
+}
+
+.favorit {
+    background: #fff;
+    color: #000
+}
+
+.spinner {
+    border: 1vw solid rgba(0, 174, 239, .15);
+    border-radius: 100%;
+    border-top-color: rgba(0, 174, 239, .8);
+    height: 7vw;
+    width: 7vw
+}
+
+.spinner,
+.spinnerForSwitch {
+    -webkit-animation: rotation .6s linear infinite;
+    animation: rotation .6s linear infinite;
+    margin: 0 auto
+}
+
+.spinnerForSwitch {
+    border: 5px solid hsla(0, 0%, 100%, .15);
+    border-radius: 100%;
+    border-top-color: hsla(0, 0%, 100%, .8);
+    height: 28px;
+    width: 28px
+}
+
+@-webkit-keyframes rotation {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg)
+    }
+    to {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg)
+    }
+}
+
+@keyframes rotation {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg)
+    }
+    to {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg)
+    }
+}
+
+
 /*# sourceMappingURL=main.921ee56f.css.map*/
