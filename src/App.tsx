@@ -1,6 +1,7 @@
 import './App.css';
 import React, { useEffect, useState } from 'react'
 import ColorButton, { Color, ColorHsv, HSVtoRGB } from './components/ColorButton'
+import SwitchOnOff from './components/SwitchOnOff';
 
 enum State {
   Idle = "Idle",
@@ -161,6 +162,7 @@ const App = () => {
               onRemove={color => removeFavoriteColor(color)}>{t}</ColorButton>
           })
         }
+        <SwitchOnOff style={{ gridRow: 10, gridColumnStart: 2, gridColumnEnd: 5, placeSelf: 'center'}}/>
       </main>
     </div>
   )
